@@ -26,6 +26,7 @@ function App() {
           ))}
         </ul>
       )}
+      <footer>Ticket count: {tickets.length}</footer>
     </div>
   )
 }
