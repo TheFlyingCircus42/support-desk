@@ -7,7 +7,6 @@ dist/
 # Environment / secrets
 .env
 .env.*
-apikey.txt
 
 # Logs
 logs/
