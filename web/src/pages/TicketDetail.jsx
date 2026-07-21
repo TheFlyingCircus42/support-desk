@@ -7,19 +7,30 @@ function TicketDetail() {
   const [ticket, setTicket] = useState(null)
   const [error, setError] = useState(null)
 
-  useEffect(() => {
+  const loadTicket = () => {
     setTicket(null)
     setError(null)
     fetchTicketById(id)
       .then(setTicket)
-      .catch((err) => setError(err.message))
+      .catch(setError)
+  }
+
+  useEffect(() => {
+    loadTicket()
   }, [id])
 
   return (
     <div>
       <h1>Ticket Detail</h1>
       {error ? (
-        <p>Failed to load ticket: {error}</p>
+        error.status >= 500 ? (
+          <>
+            <p>Something went wrong. Please try again.</p>
+            <button onClick={loadTicket}>Retry</button>
+          </>
+        ) : (
+          <p>Failed to load ticket: {error.message}</p>
+        )
       ) : !ticket ? (
         <p>Loading ticket...</p>
       ) : (
