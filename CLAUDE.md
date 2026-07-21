@@ -53,12 +53,3 @@ curl http://localhost:4000/api/tickets
 - No unapproved dependencies — stick to what's already installed
   (express, cors, react, vite) unless discussed first.
 - No committing `node_modules` or secrets (`.env`, API keys, etc.).
-
-## Git Usage
-
-- New features are developed on a new branch, named
-  `yyyy-mm-dd-hh-short-name` (date/hour prefix + a short, suitable name).
-- Merge a branch back to `main` only once it's complete and tested.
-- Never merge broken code — flag it if an attempt is made to merge something
-  broken or untested.
-- Make regular commits with short, clear messages.
