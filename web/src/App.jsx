@@ -4,7 +4,7 @@ import { fetchTickets } from './api.js'
 import './App.css'
 
 function App() {
-  const [tickets, setTickets] = useState([])
+  const [tickets, setTickets] = useState(null)
   const [error, setError] = useState(null)
 
   useEffect(() => {
@@ -18,6 +18,8 @@ function App() {
       <h1>Support Desk</h1>
       {error ? (
         <p>Failed to load tickets: {error}</p>
+      ) : !tickets ? (
+        <p>Loading tickets...</p>
       ) : (
         <ul>
           {tickets.map((ticket) => (

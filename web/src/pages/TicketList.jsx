@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { fetchTickets } from '../api.js'
 
 function TicketList() {
-  const [tickets, setTickets] = useState([])
+  const [tickets, setTickets] = useState(null)
   const [error, setError] = useState(null)
 
   useEffect(() => {
@@ -17,6 +17,8 @@ function TicketList() {
       <h1>Tickets</h1>
       {error ? (
         <p>Failed to load tickets: {error}</p>
+      ) : !tickets ? (
+        <p>Loading tickets...</p>
       ) : (
         <ul>
           {tickets.map((ticket) => (
