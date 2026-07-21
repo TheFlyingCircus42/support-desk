@@ -5,3 +5,12 @@ export async function fetchTickets() {
   }
   return res.json()
 }
+
+export async function fetchTicketById(id) {
+  const res = await fetch(`/api/tickets/${id}`)
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}))
+    throw new Error(body.error || `Failed to fetch ticket: ${res.status}`)
+  }
+  return res.json()
+}
