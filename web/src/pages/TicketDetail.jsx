@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { fetchTicketById } from '../api.js'
 
 function TicketDetail() {
@@ -22,6 +22,9 @@ function TicketDetail() {
   return (
     <div>
       <h1>Ticket Detail</h1>
+      <p>
+        <Link to="/tickets">← Back to list</Link>
+      </p>
       {error ? (
         error.status >= 500 ? (
           <>
