@@ -1,50 +1,17 @@
-import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { fetchTickets } from './api.js'
-import './App.css'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Home from './pages/Home.jsx'
+import TicketList from './pages/TicketList.jsx'
+import TicketDetail from './pages/TicketDetail.jsx'
 
 function App() {
-  const [tickets, setTickets] = useState(null)
-  const [error, setError] = useState(null)
-
-  const loadTickets = () => {
-    setError(null)
-    setTickets(null)
-    fetchTickets()
-      .then(setTickets)
-      .catch(setError)
-  }
-
-  useEffect(() => {
-    loadTickets()
-  }, [])
-
   return (
-    <div>
-      <h1>Support Desk</h1>
-      {error ? (
-        error.status >= 500 ? (
-          <>
-            <p>Something went wrong. Please try again.</p>
-            <button onClick={loadTickets}>Retry</button>
-          </>
-        ) : (
-          <p>Failed to load tickets: {error.message}</p>
-        )
-      ) : !tickets ? (
-        <p>Loading tickets...</p>
-      ) : (
-        <ul>
-          {tickets.map((ticket) => (
-            <li key={ticket.id}>
-              <Link to={`/tickets/${ticket.id}`}>
-                {ticket.subject} — {ticket.status} — {ticket.priority}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/tickets" element={<TicketList />} />
+        <Route path="/tickets/:id" element={<TicketDetail />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
