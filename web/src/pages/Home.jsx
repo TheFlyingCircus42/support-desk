@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { fetchTickets } from '../api.js'
+import Header from '../components/header.jsx'
 import '../App.css'
 
 function Home() {
@@ -21,7 +22,7 @@ function Home() {
 
   return (
     <div>
-      <h1>Support Desk</h1>
+      <Header />
       {error ? (
         error.status >= 500 ? (
           <>

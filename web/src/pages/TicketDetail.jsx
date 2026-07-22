@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { fetchTicketById } from '../api.js'
+import Header from '../components/header.jsx'
 
 function TicketDetail() {
   const { id } = useParams()
@@ -21,6 +22,7 @@ function TicketDetail() {
 
   return (
     <div>
+      <Header />
       <h1>Ticket Detail</h1>
       <p>
         <Link to="/tickets">← Back to list</Link>

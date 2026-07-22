@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { fetchTickets } from '../api.js'
+import Header from '../components/header.jsx'
 
 function TicketList() {
   const [tickets, setTickets] = useState(null)
@@ -20,6 +21,7 @@ function TicketList() {
 
   return (
     <div>
+      <Header />
       <h1>Tickets</h1>
       {error ? (
         error.status >= 500 ? (
