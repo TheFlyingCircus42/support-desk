@@ -7,6 +7,8 @@ export const tickets = [
     status: "open",
     priority: "high",
     requester: "alice@example.com",
+    description:
+      "Customer gets an 'invalid credentials' error even after resetting their password twice. Started yesterday afternoon.",
   },
   {
     id: 2,
@@ -14,6 +16,8 @@ export const tickets = [
     status: "pending",
     priority: "low",
     requester: "bob@example.com",
+    description:
+      "Customer would like a dark theme option for the dashboard to reduce eye strain during night shifts.",
   },
   {
     id: 3,
@@ -21,5 +25,7 @@ export const tickets = [
     status: "open",
     priority: "medium",
     requester: "carol@example.com",
+    description:
+      "This month's invoice charged for 15 seats but the account only has 10 active users. Needs a corrected invoice.",
   },
 ];

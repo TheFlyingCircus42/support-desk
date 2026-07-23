@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import { fetchTickets } from '../api.js'
 import Header from '../components/header.jsx'
+import TicketDetail from '../components/TicketDetail.jsx'
 import '../App.css'
 
 function Home() {
   const [tickets, setTickets] = useState(null)
   const [error, setError] = useState(null)
+  const [selectedId, setSelectedId] = useState(null)
 
   const loadTickets = () => {
     setError(null)
@@ -18,6 +20,10 @@ function Home() {
   useEffect(() => {
     loadTickets()
   }, [])
+
+  if (selectedId !== null) {
+    return <TicketDetail id={selectedId} onBack={() => setSelectedId(null)} />
+  }
 
   return (
     <div>
@@ -37,7 +43,9 @@ function Home() {
         <ul>
           {tickets.map((ticket) => (
             <li key={ticket.id}>
-              {ticket.subject} — {ticket.status} — {ticket.priority}
+              <button onClick={() => setSelectedId(ticket.id)}>
+                {ticket.subject} — {ticket.status} — {ticket.priority}
+              </button>
             </li>
           ))}
         </ul>
