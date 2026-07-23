@@ -13,6 +13,10 @@ app.get("/api/health", (req, res) => {
 
 app.use("/api/tickets", ticketsRouter);
 
+app.use((req, res) => {
+  res.status(404).json({ error: "Not found" });
+});
+
 const port = process.env.PORT || 4000;
 
 app.listen(port, () => {

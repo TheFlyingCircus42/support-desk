@@ -1,14 +1,14 @@
 import { Routes, Route } from 'react-router-dom'
 import Home from './pages/Home.jsx'
 import TicketList from './pages/TicketList.jsx'
-import TicketDetail from './pages/TicketDetail.jsx'
+import NotFound from './pages/NotFound.jsx'
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/tickets" element={<TicketList />} />
-      <Route path="/tickets/:id" element={<TicketDetail />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   )
 }

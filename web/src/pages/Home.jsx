@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { fetchTickets } from '../api.js'
 import Header from '../components/header.jsx'
 import '../App.css'
@@ -38,9 +37,7 @@ function Home() {
         <ul>
           {tickets.map((ticket) => (
             <li key={ticket.id}>
-              <Link to={`/tickets/${ticket.id}`}>
-                {ticket.subject} — {ticket.status} — {ticket.priority}
-              </Link>
+              {ticket.subject} — {ticket.status} — {ticket.priority}
             </li>
           ))}
         </ul>
