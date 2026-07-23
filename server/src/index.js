@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import ticketsRouter from "./routes/tickets.js";
+import config from "./config/index.js";
 
 const app = express();
 
@@ -17,7 +18,7 @@ app.use((req, res) => {
   res.status(404).json({ error: "Not found" });
 });
 
-const port = process.env.PORT || 4000;
+const port = config.port;
 
 app.listen(port, () => {
   console.log(`Support-desk API listening on http://localhost:${port}`);
