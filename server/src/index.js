@@ -1,25 +1,10 @@
-import express from "express";
-import cors from "cors";
-import ticketsRouter from "./routes/tickets.js";
 import config from "./config/index.js";
+import { buildApp } from "./app.js";
 
-const app = express();
+const app = buildApp();
 
-app.use(cors());
-app.use(express.json());
+console.log("BOOTING SERVER")
 
-app.get("/api/health", (req, res) => {
-  res.json({ status: "ok" });
-});
-
-app.use("/api/tickets", ticketsRouter);
-
-app.use((req, res) => {
-  res.status(404).json({ error: "Not found" });
-});
-
-const port = config.port;
-
-app.listen(port, () => {
-  console.log(`Support-desk API listening on http://localhost:${port}`);
+app.listen(config.port, () => {
+  console.log(`Support-desk API listening on http://localhost:${config.port}`);
 });
