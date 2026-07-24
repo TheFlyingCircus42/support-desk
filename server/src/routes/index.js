@@ -1,12 +1,10 @@
 import { Router } from "express";
 import ticketsRouter from "./tickets.js";
+import healthRouter from "./health.js";
 
 const router = Router();
 
-router.get("/health", (req, res) => {
-  res.json({ status: "ok" });
-});
-
+router.use(healthRouter);
 router.use("/tickets", ticketsRouter);
 
 export default router;
