@@ -74,6 +74,7 @@ each directory.
 ## Check Status in browser or via curl cmd
 - http://localhost:4000/api/ready should return a JSON onbject:  {"status":"ready"}
 - http://localhost:4000/api/health should return a JSON onbject:      - http://localhost:4000/api/ready should return a JSON onbject:  {"status":"ready"}
+- http://localhost:4000/api/tickets/count should return a JSON object: {"count": 2} (count of tickets with status "open")
 
 - http://localhost:5173/ should return a live site. Landing page is curently a ticket list view. 
 
@@ -130,7 +131,8 @@ server/src/
 ├── routes/
 │   ├── index.js          composes all routers under /api
 │   ├── health.js         /health and /ready endpoints
-│   └── tickets.js        /tickets endpoints
+│   ├── tickets.js        /tickets endpoints
+│   └── ticketCount.js    /tickets/count endpoint
 ├── services/
 │   └── ticketService.js  data-access layer over the ticket store
 ├── data/
@@ -175,5 +177,14 @@ whether it's proxied through Vite or pointed at a real API host via
 ## DEPLOYMENT (coming soon)
 
 ## Project structure
+
 ## API end points
+
+| Method | Path | Description |
+| --- | --- | --- |
+| GET | `/api/health` | Health check, includes total ticket count |
+| GET | `/api/ready` | Readiness check |
+| GET | `/api/tickets` | List all tickets |
+| GET | `/api/tickets/:id` | Get a single ticket by id (404 if not found) |
+| GET | `/api/tickets/count` | Count of tickets with `status: "open"` |
 
