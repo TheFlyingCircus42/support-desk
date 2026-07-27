@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { fetchTickets } from '../lib/api.js'
+import { fetchTickets, fetchOpenTicketCount } from '../lib/api.js'
 import Header from '../components/header.jsx'
 import TicketDetail from '../components/TicketDetail.jsx'
 import '../App.css'
@@ -8,6 +8,7 @@ function Home() {
   const [tickets, setTickets] = useState(null)
   const [error, setError] = useState(null)
   const [selectedId, setSelectedId] = useState(null)
+  const [openCount, setOpenCount] = useState(null)
 
   const loadTickets = () => {
     setError(null)
@@ -21,13 +22,20 @@ function Home() {
     loadTickets()
   }, [])
 
+  useEffect(() => {
+    fetchOpenTicketCount()
+      .then(({ count }) => setOpenCount(count))
+      .catch(() => setOpenCount(null))
+  }, [])
+
   if (selectedId !== null) {
     return <TicketDetail id={selectedId} onBack={() => setSelectedId(null)} />
   }
-
+console.log("HELLO")
   return (
     <div>
       <Header />
+      {openCount !== null && <p>Open tickets: {openCount}</p>}
       {error ? (
         error.status >= 500 ? (
           <>

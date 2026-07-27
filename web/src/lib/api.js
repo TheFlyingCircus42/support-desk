@@ -10,6 +10,16 @@ export async function fetchTickets() {
   return res.json()
 }
 
+export async function fetchOpenTicketCount() {
+  const res = await fetch(`${API_BASE}/api/tickets/count`)
+  if (!res.ok) {
+    const error = new Error(`Failed to fetch ticket count: ${res.status}`)
+    error.status = res.status
+    throw error
+  }
+  return res.json()
+}
+
 export async function fetchTicketById(id) {
   const res = await fetch(`${API_BASE}/api/tickets/${id}`)
   if (!res.ok) {
