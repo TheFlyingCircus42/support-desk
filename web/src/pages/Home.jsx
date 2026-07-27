@@ -31,7 +31,7 @@ function Home() {
   if (selectedId !== null) {
     return <TicketDetail id={selectedId} onBack={() => setSelectedId(null)} />
   }
-console.log("HELLO")
+
   return (
     <div>
       <Header />
