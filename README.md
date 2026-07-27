@@ -24,12 +24,18 @@ Working towardsa a full suite of fetures including post new tickets, delete tick
 - pSQL (coming soon)
 
 ## GETTING SET UP
+```bash
+cd server
+node src/index.js
+```
 
 - Fork and clone the repo to your local machine. 
 
 - from the project root:
-    --> cd /server
-        --> run:  npm install
+```bash
+cd server
+npm install
+```
 
 - from the project root:
     --> cd /web
