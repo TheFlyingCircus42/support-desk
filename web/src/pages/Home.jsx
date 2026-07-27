@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { fetchTickets } from '../api.js'
+import { fetchTickets } from '../lib/api.js'
 import Header from '../components/header.jsx'
 import TicketDetail from '../components/TicketDetail.jsx'
 import '../App.css'

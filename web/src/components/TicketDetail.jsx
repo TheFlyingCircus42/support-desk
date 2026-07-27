@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { fetchTicketById } from '../api.js'
+import { fetchTicketById } from '../lib/api.js'
 
 function TicketDetail({ id, onBack }) {
   const [ticket, setTicket] = useState(null)
