@@ -11,5 +11,5 @@ export const up = (pgm) => {
 }
 
 export const down = (pgm) => {
-    pgm.sql(`DROP IF EXISTS set_updated_at();`)
+    pgm.sql(`DROP FUNCTION IF EXISTS set_updated_at();`)
 }
