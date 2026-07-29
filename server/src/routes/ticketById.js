@@ -1,11 +1,17 @@
 import { Router } from "express";
-import { listTickets } from "../services/ticketService.js";
+import { getTicketById } from "../services/ticketService.js";
 
 const router = Router();
 
 router.get("/", async (req, res, next) => {
+  const { id } = req.query;
+
+  if (!id) {
+    return next();
+  }
+
   try {
-    res.json(await listTickets());
+    res.json(await getTicketById(id));
   } catch (err) {
     next(err);
   }
