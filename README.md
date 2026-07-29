@@ -72,9 +72,10 @@ See [Commands](#commands) below for the full list of scripts available in
 each directory.
 
 ## Check Status in browser or via curl cmd
-- http://localhost:4000/api/ready should return a JSON onbject:  {"status":"ready"}
-- http://localhost:4000/api/health should return a JSON onbject:      - http://localhost:4000/api/ready should return a JSON onbject:  {"status":"ready"}
+- http://localhost:4000/api/health should return a JSON object: {"status":"ok"} (liveness only - never touches the database)
+- http://localhost:4000/api/ready should return a JSON object: {"status":"ready","tickets":<count>} - or a 503 with {"status":"unavailable","error":"database unreachable"} if the database can't be reached
 - http://localhost:4000/api/tickets/count should return a JSON object: {"count": 2} (count of tickets with status "open")
+- http://localhost:4000/api/tickets/open should return the same as /api/tickets/count (open ticket count)
 
 - http://localhost:5173/ should return a live site. Landing page is curently a ticket list view. 
 
@@ -130,9 +131,11 @@ server/src/
 ├── constants/index.js    shared constants (ticket statuses/priorities, error codes)
 ├── routes/
 │   ├── index.js          composes all routers under /api
-│   ├── health.js         /health and /ready endpoints
-│   ├── tickets.js        /tickets endpoints
-│   └── ticketCount.js    /tickets/count endpoint
+│   ├── health.js         /health (liveness) and /ready (readiness) endpoints
+│   ├── tickets.js        GET /tickets (list all)
+│   ├── ticketById.js     GET /tickets?id= (single ticket by id)
+│   ├── ticketCount.js    GET /tickets/count (open ticket count)
+│   └── ticketOpen.js     GET /tickets/open (open ticket count, alias of /tickets/count)
 ├── services/
 │   └── ticketService.js  data-access layer over the ticket store
 ├── data/
@@ -182,9 +185,10 @@ whether it's proxied through Vite or pointed at a real API host via
 
 | Method | Path | Description |
 | --- | --- | --- |
-| GET | `/api/health` | Health check, includes total ticket count |
-| GET | `/api/ready` | Readiness check |
+| GET | `/api/health` | Liveness check - never touches the database. Returns `{"status":"ok"}` |
+| GET | `/api/ready` | Readiness check - queries the database for the total ticket count. Returns `{"status":"ready","tickets":<count>}`, or `503 {"status":"unavailable","error":"database unreachable"}` if the DB is down |
 | GET | `/api/tickets` | List all tickets |
-| GET | `/api/tickets/:id` | Get a single ticket by id (404 if not found) |
+| GET | `/api/tickets?id=` | Get a single ticket by id (query param, not a path segment). 404 if not found, 400 if the id isn't a valid UUID |
 | GET | `/api/tickets/count` | Count of tickets with `status: "open"` |
+| GET | `/api/tickets/open` | Same as `/api/tickets/count` (open ticket count) |
 
