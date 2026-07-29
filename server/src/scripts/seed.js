@@ -77,9 +77,21 @@ async function seed(){
 
         for (const t of TICKETS){
             await client.query(
-                `INSERT INTO tickets(id, subject, status, priority, requester_id, asignee_id, description)`,
+                `INSERT INTO tickets(id, subject, status, priority, requester_id, assignee_id, description) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
                 [t.id, t.subject, t.status, t.priority, t.requester_id, t.assignee_id, t.description]
             );
         }
+
+        await client.query("COMMIT");
+        console.log(`Seed complete: ${USERS.length} users, ${TICKETS.length} tickets added.`)
+
+    } catch (err){
+        await client.query("ROLLBACK");
+        console.error("Seed failed - rolled back: " , err.message);
+        process.exitCode = 1; 
+    } finally {
+        client.release();
+        await closePool();
     }
 }
+seed();

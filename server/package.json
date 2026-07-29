@@ -10,7 +10,7 @@
     "migrate": "node-pg-migrate",
     "migrate:up": "node-pg-migrate up",
     "migrate:down": "node-pg-migrate down",
-    "seed": "node/scripts/seed.js"
+    "seed": "node src/scripts/seed.js"
   },
   "engines": {
     "node": ">=20"
