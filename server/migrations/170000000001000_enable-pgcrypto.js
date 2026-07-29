@@ -3,5 +3,5 @@ export const up = (pgm) => {
 }
 
 export const down = (pgm) => {
-    pgm.createExtension("pgcrypto", { ifNotExists: true})
+    pgm.dropExtension("pgcrypto", { ifExists: true})
 }
