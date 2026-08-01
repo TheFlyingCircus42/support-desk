@@ -12,3 +12,6 @@ export const ERROR_CODES = {
 };
 
 export const DEMO_PASSWORD = 'password123';
+
+// Deliberately vague - don't confirm/deny whether a given email is registered.
+export const AUTH_FAILURE_MESSAGE = "invalid email or password";
