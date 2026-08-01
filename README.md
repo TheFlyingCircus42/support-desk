@@ -87,8 +87,8 @@ each directory.
 ## Check Status in browser or via curl cmd
 - http://localhost:4000/api/health should return a JSON object: {"status":"ok"} (liveness only - never touches the database)
 - http://localhost:4000/api/ready should return a JSON object: {"status":"ready","tickets":<count>} - or a 503 with {"status":"unavailable","error":"database unreachable"} if the database can't be reached
-- http://localhost:4000/api/tickets/count should return a JSON object: {"count": 2} (count of tickets with status "open")
-- http://localhost:4000/api/tickets/open should return the same as /api/tickets/count (open ticket count)
+- http://localhost:4000/api/tickets/count should return a JSON object: {"count": 2} (count of tickets with status "open") - requires `Authorization: Bearer <token>`, see [Auth](#auth)
+- http://localhost:4000/api/tickets/open should return the same as /api/tickets/count (open ticket count) - also requires a token
 
 - http://localhost:5173/ should return a live site. Landing page is curently a ticket list view. 
 
@@ -149,28 +149,34 @@ server/
     ├── config/index.js       centralizes env access (PORT, NODE_ENV, CORS_ORIGIN, DATABASE_URL) via dotenv
     ├── constants/index.js    shared constants (ticket statuses/priorities, error codes)
     ├── db.js                 Postgres connection pool (query/getPool/closePool helpers)
+    ├── auth/
+    │   ├── passwords.js      bcrypt hashing (hashPassword/verifyPassword)
+    │   └── tokens.js         JWT sign/verify (signAccessToken/verifyAccessToken)
     ├── routes/
-    │   ├── index.js          composes all routers under /api
-    │   ├── health.js         /health (liveness) and /ready (readiness) endpoints
-    │   ├── tickets.js        GET /tickets (list all)
-    │   ├── ticketById.js     GET /tickets?id= (single ticket by id)
-    │   ├── ticketCount.js    GET /tickets/count (open ticket count)
-    │   └── ticketOpen.js     GET /tickets/open (open ticket count, alias of /tickets/count)
+    │   ├── index.js          composes all routers under /api; mounts requireAuth ahead of tickets
+    │   ├── health.js         /health (liveness) and /ready (readiness) - public
+    │   ├── auth.js           /auth/register and /auth/me - register is public, /me requires auth
+    │   └── tickets.js        /tickets, /tickets/:id, /tickets/count, /tickets/open - all require auth
     ├── services/
+    │   ├── authService.js    register/login/getCurrentUser - hashing, tokens, user lookups
     │   └── ticketService.js  delegates to ticketRepository - no SQL of its own
     ├── repositories/
-    │   └── ticketRepository.js  Postgres queries for tickets (findAll/findById/countAll/countByStatus)
+    │   ├── ticketRepository.js  Postgres queries for tickets (findAll/findById/countAll/countByStatus)
+    │   └── userRepository.js    Postgres queries for users (findByEmail/findById/create/...)
     ├── scripts/
     │   └── seed.js           seeds sample users/tickets into Postgres
     ├── errors/
-    │   └── AppError.js       typed app error (status + error code), with notFound/validation helpers
+    │   └── AppError.js       typed app error (status + error code): notFound/validation/unnauthenticated/conflict
     └── middleware/
-        └── errorHandler.js   notFoundHandler + centralized errorHandler -> JSON error responses (incl. Postgres invalid-UUID -> 400)
+        ├── errorHandler.js   notFoundHandler + centralized errorHandler -> JSON error responses (incl. Postgres invalid-UUID -> 400)
+        └── requireAuth.js    JWT bearer-token gate - verifies the token, sets req.user
 ```
 
 Request flow: `index.js` boots `app.js`, which mounts the `/api` router
-(`routes/index.js`) ahead of `notFoundHandler`/`errorHandler`. Routes call
-into `services/` for data access, which delegate to `repositories/ticketRepository.js`
+(`routes/index.js`) ahead of `notFoundHandler`/`errorHandler`. `routes/index.js`
+mounts `health` and `auth` as public, then `requireAuth` as a bouncer before
+`tickets` - so every ticket route needs a valid `Authorization: Bearer <token>`.
+Routes call into `services/` for data access, which delegate to `repositories/`
 for the actual Postgres queries; anything that fails throws an `AppError` (or
 falls through to the generic 500 handler, with a dedicated case for
 Postgres's invalid-UUID error), and `errorHandler` turns that into a
@@ -199,7 +205,16 @@ configurable via `VITE_API_PROXY_TARGET`), so the app works unmodified
 whether it's proxied through Vite or pointed at a real API host via
 `VITE_API_BASE`.
 
-## AUTH (coming soon)
+## AUTH
+
+JWT bearer-token auth.
+
+- `POST /api/auth/register` - create an account. Body: `{ email, password, name }`. Returns `201 { user, token }`
+- `GET /api/auth/me` - returns the current user. Requires `Authorization: Bearer <token>`
+- All `/api/tickets/*` routes require the same `Authorization: Bearer <token>` header
+- `login` isn't wired to a route yet - `authService.js` has a working `login()`, just not mounted (following the course - not built ahead of it)
+
+Note: the `web/` frontend doesn't send an `Authorization` header yet, so its ticket views will 401 until frontend auth is added.
 
 ## DEPLOYMENT (coming soon)
 
@@ -207,12 +222,16 @@ whether it's proxied through Vite or pointed at a real API host via
 
 ## API end points
 
-| Method | Path | Description |
-| --- | --- | --- |
-| GET | `/api/health` | Liveness check - never touches the database. Returns `{"status":"ok"}` |
-| GET | `/api/ready` | Readiness check - queries the database for the total ticket count. Returns `{"status":"ready","tickets":<count>}`, or `503 {"status":"unavailable","error":"database unreachable"}` if the DB is down |
-| GET | `/api/tickets` | List all tickets |
-| GET | `/api/tickets?id=` | Get a single ticket by id (query param, not a path segment). 404 if not found, 400 if the id isn't a valid UUID |
-| GET | `/api/tickets/count` | Count of tickets with `status: "open"` |
-| GET | `/api/tickets/open` | Same as `/api/tickets/count` (open ticket count) |
+| Method | Path | Auth | Description |
+| --- | --- | --- | --- |
+| GET | `/api/health` | no | Liveness check - never touches the database. Returns `{"status":"ok"}` |
+| GET | `/api/ready` | no | Readiness check - queries the database for the total ticket count. Returns `{"status":"ready","tickets":<count>}`, or `503 {"status":"unavailable","error":"database unreachable"}` if the DB is down |
+| POST | `/api/auth/register` | no | Create an account. Body: `{ email, password, name }`. Returns `201 { user, token }` |
+| GET | `/api/auth/me` | yes | Returns the current user for the given token |
+| GET | `/api/tickets` | yes | List all tickets |
+| GET | `/api/tickets/:id` | yes | Get a single ticket by id. 404 if not found, 400 if the id isn't a valid UUID |
+| GET | `/api/tickets/count` | yes | Count of tickets with `status: "open"` |
+| GET | `/api/tickets/open` | yes | Same as `/api/tickets/count` (open ticket count) |
+
+"Auth" = requires header `Authorization: Bearer <token>` (token comes from `/api/auth/register`).
 
