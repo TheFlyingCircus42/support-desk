@@ -8,13 +8,15 @@ Working towardsa a full suite of fetures including post new tickets, delete tick
 ## FEATURES
 -Current features 
     - View Tickets
+    - User registration + JWT auth (all ticket routes require a logged-in user - see [Auth](#auth))
 
 -Planned features:
     - delete tickets
     - close tickets
     - post new tickets
     - change ticket status
-    - users & auth 
+    - login (register works; login route not wired up yet)
+    - ticket editing permissions
 
 
 ## TECH STACK
@@ -128,6 +130,9 @@ Copy `server/.env.example` to `server/.env` and fill in the values (never commit
     - `DATABASE_URL` - Postgres connection string, e.g. `postgres://supportdesk:supportdesk@localhost:5432/supportdesk`
     - `PORT` - API port (defaults to 4000)
     - `CORS_ORIGIN` - allowed CORS origin (`*` for local dev)
+    - `JWT_SECRET` - **required** - HS256 signing secret for access tokens. The server will not start without it. Generate one with `node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"` - never commit the real value
+    - `ACCESS_TOKEN_TTL` - how long an access token stays valid (defaults to `15m`)
+    - `BCRYPT_ROUNDS` - bcrypt cost factor for password hashing (defaults to 12)
 
 
 ## ARCHITECTURE
@@ -190,7 +195,7 @@ web/src/
 ├── App.jsx                  root component, renders the Home page
 ├── config.js                exports API_BASE from VITE_API_BASE (see Environment Variables)
 ├── lib/
-│   └── api.js                fetch helpers: fetchTickets, fetchTicketById
+│   └── api.js                fetch helpers: fetchTickets, fetchOpenTicketCount, fetchTicketById
 ├── pages/
 │   └── Home.jsx              ticket list view - fetching, loading/error state, ticket selection
 └── components/
@@ -209,7 +214,7 @@ whether it's proxied through Vite or pointed at a real API host via
 
 JWT bearer-token auth.
 
-- `POST /api/auth/register` - create an account. Body: `{ email, password, name }`. Returns `201 { user, token }`
+- `POST /api/auth/register` - create an account. Body: `{ email, password, name }`. Returns `201 { user, token }`, `400` if a field is missing or the password is under 8 characters, or `409` if the email is already registered (message is deliberately generic - doesn't confirm/deny which email exists)
 - `GET /api/auth/me` - returns the current user. Requires `Authorization: Bearer <token>`
 - All `/api/tickets/*` routes require the same `Authorization: Bearer <token>` header
 - `login` isn't wired to a route yet - `authService.js` has a working `login()`, just not mounted (following the course - not built ahead of it)
@@ -226,7 +231,7 @@ Note: the `web/` frontend doesn't send an `Authorization` header yet, so its tic
 | --- | --- | --- | --- |
 | GET | `/api/health` | no | Liveness check - never touches the database. Returns `{"status":"ok"}` |
 | GET | `/api/ready` | no | Readiness check - queries the database for the total ticket count. Returns `{"status":"ready","tickets":<count>}`, or `503 {"status":"unavailable","error":"database unreachable"}` if the DB is down |
-| POST | `/api/auth/register` | no | Create an account. Body: `{ email, password, name }`. Returns `201 { user, token }` |
+| POST | `/api/auth/register` | no | Create an account. Body: `{ email, password, name }`. Returns `201 { user, token }`, `400` if a field is missing or password is under 8 chars, `409` if the email is already registered |
 | GET | `/api/auth/me` | yes | Returns the current user for the given token |
 | GET | `/api/tickets` | yes | List all tickets |
 | GET | `/api/tickets/:id` | yes | Get a single ticket by id. 404 if not found, 400 if the id isn't a valid UUID |
