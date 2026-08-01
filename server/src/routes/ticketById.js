@@ -3,15 +3,9 @@ import { getTicketById } from "../services/ticketService.js";
 
 const router = Router();
 
-router.get("/", async (req, res, next) => {
-  const { id } = req.query;
-
-  if (!id) {
-    return next();
-  }
-
+router.get("/:id", async (req, res, next) => {
   try {
-    res.json(await getTicketById(id));
+    res.json(await getTicketById(req.params.id));
   } catch (err) {
     next(err);
   }

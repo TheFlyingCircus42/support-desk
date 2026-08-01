@@ -15,4 +15,13 @@ export class AppError extends Error {
   static validation(message) {
     return new AppError(message, 400, ERROR_CODES.VALIDATION);
   }
+
+  static unnauthenticated(message = "authentication required") {
+    return new AppError(message, 401, ERROR_CODES.UNNAUTHENTICATED);
+  }
+
+  static conflict(message = "conflict") {
+    return new AppError(message, 409, ERROR_CODES.CONFLICT)
+  }
+
 }

@@ -1,6 +1,6 @@
 ## SUPPORT DESK APP
 
-This project is a full-stack support desk web app - using react/vite on the front end with. node Express server on the back end.  Currently no SQL - dummy data stored in memory but with plans to move to pSQL.
+This project is a full-stack support desk web app - using react/vite on the front end with node Express server on the back end. Backed by PostgreSQL - tickets and users are stored and queried from a real database, with migrations and a seed script included.
 
 Currently users can view a list of sample tickets.
 Working towardsa a full suite of fetures including post new tickets, delete tickets, close tickets, change ticket status add notes to tickets, user base and ticket editing permissions.
@@ -21,11 +21,24 @@ Working towardsa a full suite of fetures including post new tickets, delete tick
 - Node js
 - Express
 - Rect / Vite
-- pSQL (coming soon)
+- PostgreSQL
 
 ## GETTING SET UP
 
 - Fork and clone the repo to your local machine.
+
+### Database setup
+
+The API requires a Postgres database - it will not start without one.
+
+1. Create a local Postgres database (e.g. `createdb supportdesk`).
+2. Copy `server/.env.example` to `server/.env` and fill in `DATABASE_URL` (see [Environment Variables](#environment-variables)).
+3. From `server/`, run migrations and seed some sample data:
+   ```bash
+   cd server
+   npm run migrate:up
+   npm run seed
+   ```
 
 ### Quick start (recommended)
 
@@ -97,6 +110,9 @@ each directory.
 | --- | --- |
 | `npm start` | Start the API server (`node src/index.js`) |
 | `npm run dev` | Start the API server with file watching (`node --watch src/index.js`) |
+| `npm run migrate:up` | Apply pending Postgres migrations (`server/migrations/`) |
+| `npm run migrate:down` | Roll back the last Postgres migration |
+| `npm run seed` | Seed sample users/tickets into Postgres (`src/scripts/seed.js`) |
 
 ### `web/` (run from inside `web/`)
 
@@ -108,9 +124,10 @@ each directory.
 | `npm run lint` | Lint the web app with oxlint |
 
 ## ENVIRONMENT VARIABLES
-    - currently no environments running at this stage. 
-    - dotenv will be used to allow production/development/test environments.
-    - currently defaults to PORT 4000 for back end and "development: environment.
+Copy `server/.env.example` to `server/.env` and fill in the values (never commit `.env`):
+    - `DATABASE_URL` - Postgres connection string, e.g. `postgres://supportdesk:supportdesk@localhost:5432/supportdesk`
+    - `PORT` - API port (defaults to 4000)
+    - `CORS_ORIGIN` - allowed CORS origin (`*` for local dev)
 
 
 ## ARCHITECTURE
@@ -124,33 +141,40 @@ own `package.json`, dependencies and `node_modules`.
 ### `server/` - Express API
 
 ```
-server/src/
-├── index.js              entry point: builds the app and starts listening
-├── app.js                builds the Express app (middleware, routing, error handling)
-├── config/index.js       centralizes env access (PORT, NODE_ENV, CORS_ORIGIN) via dotenv
-├── constants/index.js    shared constants (ticket statuses/priorities, error codes)
-├── routes/
-│   ├── index.js          composes all routers under /api
-│   ├── health.js         /health (liveness) and /ready (readiness) endpoints
-│   ├── tickets.js        GET /tickets (list all)
-│   ├── ticketById.js     GET /tickets?id= (single ticket by id)
-│   ├── ticketCount.js    GET /tickets/count (open ticket count)
-│   └── ticketOpen.js     GET /tickets/open (open ticket count, alias of /tickets/count)
-├── services/
-│   └── ticketService.js  data-access layer over the ticket store
-├── data/
-│   └── tickets.js        in-memory ticket data (stand-in for a DB - pSQL planned)
-├── errors/
-│   └── AppError.js       typed app error (status + error code), with notFound/validation helpers
-└── middleware/
-    └── errorHandler.js   notFoundHandler + centralized errorHandler -> JSON error responses
+server/
+├── migrations/           node-pg-migrate migration files (pgcrypto, updated_at trigger, users, tickets) - run via `npm run migrate:up`
+└── src/
+    ├── index.js              entry point: builds the app and starts listening
+    ├── app.js                builds the Express app (middleware, routing, error handling)
+    ├── config/index.js       centralizes env access (PORT, NODE_ENV, CORS_ORIGIN, DATABASE_URL) via dotenv
+    ├── constants/index.js    shared constants (ticket statuses/priorities, error codes)
+    ├── db.js                 Postgres connection pool (query/getPool/closePool helpers)
+    ├── routes/
+    │   ├── index.js          composes all routers under /api
+    │   ├── health.js         /health (liveness) and /ready (readiness) endpoints
+    │   ├── tickets.js        GET /tickets (list all)
+    │   ├── ticketById.js     GET /tickets?id= (single ticket by id)
+    │   ├── ticketCount.js    GET /tickets/count (open ticket count)
+    │   └── ticketOpen.js     GET /tickets/open (open ticket count, alias of /tickets/count)
+    ├── services/
+    │   └── ticketService.js  delegates to ticketRepository - no SQL of its own
+    ├── repositories/
+    │   └── ticketRepository.js  Postgres queries for tickets (findAll/findById/countAll/countByStatus)
+    ├── scripts/
+    │   └── seed.js           seeds sample users/tickets into Postgres
+    ├── errors/
+    │   └── AppError.js       typed app error (status + error code), with notFound/validation helpers
+    └── middleware/
+        └── errorHandler.js   notFoundHandler + centralized errorHandler -> JSON error responses (incl. Postgres invalid-UUID -> 400)
 ```
 
 Request flow: `index.js` boots `app.js`, which mounts the `/api` router
 (`routes/index.js`) ahead of `notFoundHandler`/`errorHandler`. Routes call
-into `services/` for data access; anything that fails throws an `AppError`
-(or falls through to the generic 500 handler), and `errorHandler` turns that
-into a consistent `{ error: { code, message } }` JSON response.
+into `services/` for data access, which delegate to `repositories/ticketRepository.js`
+for the actual Postgres queries; anything that fails throws an `AppError` (or
+falls through to the generic 500 handler, with a dedicated case for
+Postgres's invalid-UUID error), and `errorHandler` turns that into a
+consistent `{ error: { code, message } }` JSON response.
 
 ### `web/` - React + Vite
 
