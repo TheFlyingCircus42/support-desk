@@ -21,9 +21,9 @@ export async function findById(id) {
     return rows[0] || null;    
 }
 
-//findEmailwitHash
+//findByEmailWithHash
 //only file that returns password hash
-export async function findEmailWithHash(email) {
+export async function findByEmailWithHash(email) {
     const { rows } = await query(
         `SELECT id, email, name, password_hash
         FROM users 
@@ -47,8 +47,8 @@ export async function create({email, name, passwordHash}) {
 }
 
 
-//touchlastlogin()
-export async function touchLastogin(id) {
+//touchLastLogin()
+export async function touchLastLogin(id) {
     await query(`UPDATE users
         SET last_login_at = now()
         WHERE id = $1` ,
