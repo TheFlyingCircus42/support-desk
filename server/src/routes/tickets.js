@@ -1,5 +1,10 @@
 import { Router } from "express";
-import { listTickets, getTicketById, countOpenTickets } from "../services/ticketService.js";
+import {
+  listTickets,
+  countOpenTickets,
+  getTicketById,
+} from "../services/ticketService.js";
+import { AppError } from "../errors/AppError.js";
 
 const router = Router();
 
@@ -11,19 +16,12 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-// /count and /open must come before /:id below - otherwise :id would match
-// "count"/"open" as an id and swallow these requests.
+// Must be declared before /:id — otherwise Express matches "count" as the
+// :id param and this route is never reached.
 router.get("/count", async (req, res, next) => {
   try {
-    res.json({ count: await countOpenTickets() });
-  } catch (err) {
-    next(err);
-  }
-});
-
-router.get("/open", async (req, res, next) => {
-  try {
-    res.json({ count: await countOpenTickets() });
+    const count = await countOpenTickets();
+    res.json({ count });
   } catch (err) {
     next(err);
   }
@@ -33,6 +31,9 @@ router.get("/:id", async (req, res, next) => {
   try {
     res.json(await getTicketById(req.params.id));
   } catch (err) {
+    if (err instanceof AppError && err.status === 404) {
+      return res.status(404).json({ error: err.message });
+    }
     next(err);
   }
 });
