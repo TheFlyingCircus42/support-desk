@@ -1,13 +1,13 @@
 // JWT sign and verify
-// mint a shortlived signed claim, and verify one
+// mint a short-lived signed claim, and verify one
 
 import jwt from "jsonwebtoken"
 import config from "../config/index.js"
 
 const TOKEN_TYPE_ACCESS = "access";
 
-export function signAccessToken(user){
-    return jwt.sign({ type: TOKEN_TYPE_ACCESS }, config.jwtSecret, {
+export function signAccessToken(user) {
+    return  jwt.sign({ type: TOKEN_TYPE_ACCESS }, config.jwtSecret, {
         subject: user.id,
         expiresIn: config.accessTokenTtl,
         algorithm: "HS256",

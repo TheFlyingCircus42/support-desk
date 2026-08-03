@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
-import apiRouter from "./routes/index.js";
 import config from "./config/index.js";
+import apiRouter from "./routes/index.js";
 import { notFoundHandler, errorHandler } from "./middleware/errorHandler.js";
 
 export function buildApp() {

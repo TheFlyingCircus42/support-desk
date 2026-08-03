@@ -3,7 +3,8 @@ import { countTickets } from "../services/ticketService.js";
 
 const router = Router();
 
-// Liveness only — deliberately never touches the database, so a DB blip doesn't get an otherwise-healthy process killed by an orchestrator.
+// Liveness only — deliberately never touches the database. A DB blip
+// shouldn't make an orchestrator kill a process that's otherwise fine.
 router.get("/health", (req, res) => {
   res.json({ status: "ok" });
 });
