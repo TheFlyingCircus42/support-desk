@@ -1,16 +1,15 @@
 import { Router } from "express";
 import {
-  listTickets,
-  countOpenTickets,
-  getTicketById,
+  listTicketsFor,
+  countOpenTicketsFor,
+  getTicketByIdFor,
 } from "../services/ticketService.js";
-import { AppError } from "../errors/AppError.js";
 
 const router = Router();
 
 router.get("/", async (req, res, next) => {
   try {
-    res.json(await listTickets());
+    res.json(await listTicketsFor(req.user.id));
   } catch (err) {
     next(err);
   }
@@ -20,8 +19,7 @@ router.get("/", async (req, res, next) => {
 // :id param and this route is never reached.
 router.get("/count", async (req, res, next) => {
   try {
-    const count = await countOpenTickets();
-    res.json({ count });
+    res.json({ count: await countOpenTicketsFor(req.user.id) });
   } catch (err) {
     next(err);
   }
@@ -29,11 +27,8 @@ router.get("/count", async (req, res, next) => {
 
 router.get("/:id", async (req, res, next) => {
   try {
-    res.json(await getTicketById(req.params.id));
+    res.json(await getTicketByIdFor(req.params.id, req.user.id));
   } catch (err) {
-    if (err instanceof AppError && err.status === 404) {
-      return res.status(404).json({ error: err.message });
-    }
     next(err);
   }
 });
