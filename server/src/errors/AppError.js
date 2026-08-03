@@ -3,7 +3,6 @@ import { ERROR_CODES } from "../constants/index.js";
 export class AppError extends Error {
   constructor(message, status = 500, code = ERROR_CODES.INTERNAL) {
     super(message);
-    this.name = "AppError";
     this.status = status;
     this.code = code;
   }
@@ -16,12 +15,11 @@ export class AppError extends Error {
     return new AppError(message, 400, ERROR_CODES.VALIDATION);
   }
 
-  static unnauthenticated(message = "authentication required") {
-    return new AppError(message, 401, ERROR_CODES.UNNAUTHENTICATED);
+  static unauthenticated(message = "authentication required") {
+    return new AppError(message, 401, ERROR_CODES.UNAUTHENTICATED);
   }
 
   static conflict(message = "conflict") {
-    return new AppError(message, 409, ERROR_CODES.CONFLICT)
+    return new AppError(message, 409, ERROR_CODES.CONFLICT);
   }
-
 }

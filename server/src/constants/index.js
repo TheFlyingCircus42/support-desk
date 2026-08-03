@@ -4,14 +4,10 @@ export const TICKET_PRIORITIES = ["low", "medium", "high"];
 
 export const ERROR_CODES = {
   NOT_FOUND: "NOT_FOUND",
-  VALIDATION: "VALIDATION",
-  INTERNAL: "INTERNAL",
-
-  UNNAUTHENTICATED: "UNNAUTHENTICATED",
+  VALIDATION: "VALIDATION_ERROR",
+  INTERNAL: "INTERNAL_ERROR",
+  UNAUTHENTICATED: "UNAUTHENTICATED",
   CONFLICT: "CONFLICT",
 };
 
-export const DEMO_PASSWORD = 'password123';
-
-// Deliberately vague - don't confirm/deny whether a given email is registered.
-export const AUTH_FAILURE_MESSAGE = "invalid email or password";
+export const DEMO_PASSWORD = "password123";
