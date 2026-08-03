@@ -2,14 +2,14 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-//make JWT seecret required
+// make JWT_SECRET required
 function requireEnv(name) {
   const value = process.env[name];
   if (!value || value.trim() === "") {
     throw new Error(
-      `${name} is not set. Copy server/.env.example to server/.env and set it. `,
-      "The JWT secre is a credential - never hardcode it and never commit it."
-    );
+      `${name} is not set. Copy server/.env.example to server/.env and set it. ` +
+      "The JWT secret is a credential - never hard-code it and never commit it."
+    )
   }
   return value;
 }
