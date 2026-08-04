@@ -1,23 +1,25 @@
 import { useEffect, useState } from 'react'
-import Home from './pages/Home.jsx'
-import { fetchOpenTicketCount } from './lib/api.js'
+import TicketList from './TicketList.jsx'
+import TicketDetail from './TicketDetail.jsx'
+import { fetchTicketCount } from './lib/api.js'
+import './App.css'
 
 function App() {
+  const [selectedId, setSelectedId] = useState(null)
   const [count, setCount] = useState(null)
 
   useEffect(() => {
-    fetchOpenTicketCount()
-      .then(({ count }) => {
-        console.log('Open tickets:', count)
-        setCount(count)
-      })
-      .catch(() => setCount(null))
+    fetchTicketCount().then(({ count }) => setCount(count))
   }, [])
 
   return (
     <>
-      <Home />
-      {count !== null && <footer>Open Tickets {count}</footer>}
+      {selectedId !== null ? (
+        <TicketDetail id={selectedId} onBack={() => setSelectedId(null)} />
+      ) : (
+        <TicketList onSelect={setSelectedId} />
+      )}
+      {count !== null && <footer>{count} open tickets</footer>}
     </>
   )
 }
