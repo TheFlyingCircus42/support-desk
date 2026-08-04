@@ -1,6 +1,5 @@
 import { randomUUID } from "node:crypto";
 import { buildApp } from "../app.js";
-import { signAccessToken } from "../auth/tokens.js";
 import { closePool } from "../db.js";
 import { DEMO_PASSWORD } from "../constants/index.js";
 
@@ -28,10 +27,6 @@ function check(stage, name, passed, detail) {
 function skip(stage, name, reason) {
   results.push({ stage, name, status: "invalid", detail: reason });
   console.log(`[SKIP] ${stage} :: ${name} -- ${reason}`);
-}
-
-function tokenFor(seedUser) {
-  return signAccessToken({ id: seedUser.id });
 }
 
 async function main() {
@@ -112,7 +107,7 @@ async function main() {
       stage3,
       "correct credentials -> 200, has token",
       goodLogin.status === 200 && typeof goodLogin.json?.token === "string",
-      `${JSON.stringify(goodLogin)} (expected to fail until POST /api/auth/login is wired to authService.login())`
+      JSON.stringify(goodLogin)
     );
 
     const wrongPassword = await api("POST", "/api/auth/login", {
@@ -150,17 +145,26 @@ async function main() {
       skip(stage4, "valid token -> GET /api/auth/me returns the right user", "stage 2 register did not yield a token");
     }
 
-    // ---- Precondition check for stages 5-8: seeded fixtures present? ----
-    const aliceToken = tokenFor(SEED.alice);
-    const bobToken = tokenFor(SEED.bob);
-    const devToken = tokenFor(SEED.dev);
+    // ---- Precondition check for stages 5-8: get real logged-in tokens for the
+    // seeded users via the (now-wired) login route. This doubles as the seed-data
+    // check -- if alice/bob/dev can't log in, the seed hasn't been loaded.
+    const aliceToken = goodLogin.status === 200 ? goodLogin.json?.token : null;
 
-    const aliceMe = await api("GET", "/api/auth/me", { token: aliceToken });
-    const seedPresent = aliceMe.status === 200;
+    const bobLogin = await api("POST", "/api/auth/login", {
+      body: { email: SEED.bob.email, password: DEMO_PASSWORD },
+    });
+    const bobToken = bobLogin.status === 200 ? bobLogin.json?.token : null;
+
+    const devLogin = await api("POST", "/api/auth/login", {
+      body: { email: SEED.dev.email, password: DEMO_PASSWORD },
+    });
+    const devToken = devLogin.status === 200 ? devLogin.json?.token : null;
+
+    const seedPresent = Boolean(aliceToken && bobToken && devToken);
 
     if (!seedPresent) {
       console.log(
-        "Seed data not found -- run `npm run migrate:up` and `npm run seed` first, then re-run `npm run smoke:auth`."
+        "Could not log in as alice/bob/dev -- run `npm run migrate:up` and `npm run seed` first, then re-run `npm run smoke:auth`."
       );
       for (const [stage, names] of [
         ["5 Authorization", ["own tickets list is scoped to exactly the seeded ticket", "open-ticket count matches the scoped list"]],
