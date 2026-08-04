@@ -76,8 +76,10 @@ server/
 ## Do Not
 
 - Don't build features the course hasn't covered yet, even if the shape is
-  obvious (e.g. `login()` exists in `authService.js` but stays unwired to a
-  route until that lesson).
+  obvious. (`POST /api/auth/login` was a standing example of this — wired up
+  on 2026-08-04 ahead of the course's own pace, by explicit request. Treat
+  any future "obvious but unbuilt" feature the same way unless told
+  otherwise.)
 - No unapproved dependencies — stick to what's already installed unless
   discussed first.
 - No committing `node_modules` or secrets (`.env`, API keys, etc.).
