@@ -10,7 +10,8 @@
     "migrate": "node-pg-migrate",
     "migrate:up": "node-pg-migrate up",
     "migrate:down": "node-pg-migrate down",
-    "seed": "node src/scripts/seed.js"
+    "seed": "node src/scripts/seed.js",
+    "smoke:auth": "node src/scripts/smoke-auth.js"
   },
   "engines": {
     "node": ">=20"
