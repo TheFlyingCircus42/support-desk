@@ -1,0 +1,36 @@
+.status-open {
+  color: red;
+}
+
+.status-pending {
+  color: orange;
+}
+
+.status-closed {
+  color: green;
+}
+
+.priority-high,
+.priority-medium,
+.priority-low {
+  color: white;
+  padding: 0 0.4em;
+  border-radius: 3px;
+}
+
+.priority-high {
+  background: red;
+}
+
+.priority-medium {
+  background: orange;
+}
+
+.priority-low {
+  background: green;
+}
+
+.ticket-list button {
+  border: none;
+  border-radius: 6px;
+}

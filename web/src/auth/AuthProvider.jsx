@@ -21,7 +21,7 @@ export function AuthProvider({ children }) {
     }
 
     fetchCurrentUser(token)
-      .then((fetchedUser) => {
+      .then(({ user: fetchedUser }) => {
         if (!cancelled) {
           setUser(fetchedUser)
         }

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from './authContext.js'
+import './LoginForm.css'
 
 export function LoginForm() {
   const { signIn } = useAuth()
@@ -22,13 +23,15 @@ export function LoginForm() {
   }
 
   return (
-    <form onSubmit={onSubmit}>
-      <p>
+    <form className="login-form" onSubmit={onSubmit}>
+      <h1>Sign in</h1>
+
+      <p className="login-form-hint">
         Demo credentials: alice@example.com or dev@supportdesk.local, password
         password123
       </p>
 
-      <div>
+      <div className="login-form-field">
         <label htmlFor="login-email">Email</label>
         <input
           id="login-email"
@@ -40,7 +43,7 @@ export function LoginForm() {
         />
       </div>
 
-      <div>
+      <div className="login-form-field">
         <label htmlFor="login-password">Password</label>
         <input
           id="login-password"
@@ -52,7 +55,11 @@ export function LoginForm() {
         />
       </div>
 
-      {error && <p role="alert">{error}</p>}
+      {error && (
+        <p className="login-form-error" role="alert">
+          {error}
+        </p>
+      )}
 
       <button type="submit" disabled={submitting}>
         {submitting ? 'Signing in…' : 'Sign in'}
