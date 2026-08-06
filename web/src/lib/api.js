@@ -1,25 +1,75 @@
 import { API_BASE } from '../config.js'
 
-export async function fetchTickets() {
-  const res = await fetch(`${API_BASE}/api/tickets`)
-  if (!res.ok) {
-    throw new Error(`Failed to fetch tickets: ${res.status}`)
+export class ApiError extends Error {
+  constructor(status, message) {
+    super(message)
+    this.name = 'ApiError'
+    this.status = status
   }
-  return res.json()
 }
 
-export async function fetchTicket(id) {
-  const res = await fetch(`${API_BASE}/api/tickets/${id}`)
-  if (!res.ok) {
-    throw new Error(`Failed to fetch ticket ${id}: ${res.status}`)
+function messageFrom(body, status) {
+  if (typeof body?.error === 'string') {
+    return body.error
   }
-  return res.json()
+  if (typeof body?.error?.message === 'string') {
+    return body.error.message
+  }
+  return `Request failed (${status})`
 }
 
-export async function fetchTicketCount() {
-  const res = await fetch(`${API_BASE}/api/tickets/count`)
-  if (!res.ok) {
-    throw new Error(`Failed to fetch ticket count: ${res.status}`)
+async function apiFetch(path, { token, method = 'GET', body } = {}) {
+  const headers = {}
+  if (body !== undefined) {
+    headers['content-type'] = 'application/json'
   }
-  return res.json()
+  if (token) {
+    headers['authorization'] = `Bearer ${token}`
+  }
+
+  const res = await fetch(`${API_BASE}${path}`, {
+    method,
+    headers,
+    body: body !== undefined ? JSON.stringify(body) : undefined,
+  })
+
+  const text = await res.text()
+  let data = null
+  if (text) {
+    try {
+      data = JSON.parse(text)
+    } catch {
+      throw new ApiError(res.status, 'Invalid JSON response from server')
+    }
+  }
+
+  if (!res.ok) {
+    throw new ApiError(res.status, messageFrom(data, res.status))
+  }
+
+  return data
+}
+
+export function login(email, password) {
+  return apiFetch('/api/auth/login', { method: 'POST', body: { email, password } })
+}
+
+export function register(email, name, password) {
+  return apiFetch('/api/auth/register', { method: 'POST', body: { email, name, password } })
+}
+
+export function fetchCurrentUser(token) {
+  return apiFetch('/api/auth/me', { token })
+}
+
+export function fetchTickets(token) {
+  return apiFetch('/api/tickets', { token })
+}
+
+export function fetchTicket(id, token) {
+  return apiFetch(`/api/tickets/${id}`, { token })
+}
+
+export function fetchTicketCount(token) {
+  return apiFetch('/api/tickets/count', { token })
 }

@@ -1,0 +1,44 @@
+.status-open,
+.status-pending,
+.status-closed,
+.priority-high,
+.priority-medium,
+.priority-low,
+.you-pill {
+  display: inline-block;
+  min-width: 3.8rem;
+  text-align: center;
+  color: white;
+  font-size: 0.85em;
+  padding: 0 0.4em;
+  border-radius: 6px;
+}
+
+.status-open {
+  background: red;
+}
+
+.status-pending {
+  background: orange;
+}
+
+.status-closed {
+  background: green;
+}
+
+.priority-high {
+  background: red;
+}
+
+.priority-medium {
+  background: orange;
+}
+
+.priority-low {
+  background: green;
+}
+
+.you-pill {
+  margin-left: 0.5em;
+  background: #1d4ed8;
+}
