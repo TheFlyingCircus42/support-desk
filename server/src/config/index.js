@@ -23,6 +23,7 @@ const config = {
   jwtSecret: requireEnv("JWT_SECRET"),
   accessTokenTtl: process.env.ACCESS_TOKEN_TTL || "15m",
   bcryptRounds: Number(process.env.BCRYPT_ROUNDS || 12),
+  refreshTokenTtlDays: Number(process.env.REFRESH_TOKEN_TTL_DAYS || 30),
 };
 
 export default config;
