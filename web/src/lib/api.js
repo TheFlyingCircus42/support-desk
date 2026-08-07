@@ -30,6 +30,7 @@ async function apiFetch(path, { token, method = 'GET', body } = {}) {
   const res = await fetch(`${API_BASE}${path}`, {
     method,
     headers,
+    credentials: 'include',
     body: body !== undefined ? JSON.stringify(body) : undefined,
   })
 
@@ -52,6 +53,17 @@ async function apiFetch(path, { token, method = 'GET', body } = {}) {
 
 export function login(email, password) {
   return apiFetch('/api/auth/login', { method: 'POST', body: { email, password } })
+}
+
+// The refresh token itself is never handled here - it lives in an httpOnly
+// cookie the browser sends automatically (credentials: 'include' above).
+// This just asks the server to use it.
+export function refreshSession() {
+  return apiFetch('/api/auth/refresh', { method: 'POST' })
+}
+
+export function logout() {
+  return apiFetch('/api/auth/logout', { method: 'POST' })
 }
 
 export function register(email, name, password) {
