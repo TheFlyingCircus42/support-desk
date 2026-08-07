@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useAuth } from './authContext.js'
 import './LoginForm.css'
 
-export function LoginForm() {
+export function LoginForm({ onSwitchToRegister }) {
   const { signIn } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -63,6 +63,9 @@ export function LoginForm() {
 
       <button type="submit" disabled={submitting}>
         {submitting ? 'Signing in…' : 'Sign in'}
+      </button>
+      <button type="button" onClick={onSwitchToRegister}>
+        Register
       </button>
     </form>
   )

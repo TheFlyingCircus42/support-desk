@@ -1,6 +1,8 @@
+import { randomUUID } from "node:crypto";
 import * as userRepository from "../repositories/userRepository.js";
 import { hashPassword, verifyPassword } from "../auth/passwords.js";
 import { signAccessToken } from "../auth/tokens.js";
+import { issueRefreshToken } from "./authService.js";
 import { AppError } from "../errors/AppError.js";
 
 const MIN_PASSWORD_LENGTH = 8;
@@ -19,7 +21,8 @@ export async function register({ email, name, password }) {
 
   try {
     const user = await userRepository.create({ email, name, passwordHash });
-    return { user, token: signAccessToken(user) };
+    const refreshToken = await issueRefreshToken(user.id, randomUUID());
+    return { user, token: signAccessToken(user), refreshToken };
   } catch (err) {
     // 23505 = unique_violation on users.email
     if (err.code === "23505") {
