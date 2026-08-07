@@ -1,3 +1,26 @@
+.ticket-panel {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background: var(--color-bg-subtle);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+
+.error-text {
+  color: var(--color-danger);
+}
+
+.back-button {
+  background: transparent;
+  color: var(--color-brand);
+  border: 1px solid var(--color-brand);
+  border-radius: 6px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
 .status-open,
 .status-pending,
 .status-closed,
@@ -8,37 +31,37 @@
   display: inline-block;
   min-width: 3.8rem;
   text-align: center;
-  color: white;
+  color: var(--color-pill-text);
   font-size: 0.85em;
   padding: 0 0.4em;
   border-radius: 6px;
 }
 
 .status-open {
-  background: red;
+  background: var(--color-status-open);
 }
 
 .status-pending {
-  background: orange;
+  background: var(--color-status-pending);
 }
 
 .status-closed {
-  background: green;
+  background: var(--color-status-closed);
 }
 
 .priority-high {
-  background: red;
+  background: var(--color-priority-high);
 }
 
 .priority-medium {
-  background: orange;
+  background: var(--color-priority-medium);
 }
 
 .priority-low {
-  background: green;
+  background: var(--color-priority-low);
 }
 
 .you-pill {
   margin-left: 0.5em;
-  background: #1d4ed8;
+  background: var(--color-you);
 }

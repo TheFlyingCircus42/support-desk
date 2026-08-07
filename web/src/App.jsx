@@ -15,7 +15,7 @@ function App() {
   // It has no bearing on whether the API actually returns data - that's
   // enforced entirely server-side via requireAuth.
   if (loading) {
-    return <p>Loading…</p>
+    return <p className="loading-text">Loading…</p>
   }
 
   return (

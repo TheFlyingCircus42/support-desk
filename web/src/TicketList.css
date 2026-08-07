@@ -1,36 +1,81 @@
+.ticket-panel {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background: var(--color-bg-subtle);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+
+.muted-text {
+  color: var(--color-text-muted);
+}
+
+.error-text {
+  color: var(--color-danger);
+}
+
+.status-open,
+.status-pending,
+.status-closed,
+.priority-high,
+.priority-medium,
+.priority-low,
+.role-pill {
+  display: inline-block;
+  min-width: 3.8rem;
+  text-align: center;
+  color: var(--color-pill-text);
+  font-size: 0.85em;
+  padding: 0 0.4em;
+  border-radius: 6px;
+}
+
 .status-open {
-  color: red;
+  background: var(--color-status-open);
 }
 
 .status-pending {
-  color: orange;
+  background: var(--color-status-pending);
 }
 
 .status-closed {
-  color: green;
-}
-
-.priority-high,
-.priority-medium,
-.priority-low {
-  color: white;
-  padding: 0 0.4em;
-  border-radius: 3px;
+  background: var(--color-status-closed);
 }
 
 .priority-high {
-  background: red;
+  background: var(--color-priority-high);
 }
 
 .priority-medium {
-  background: orange;
+  background: var(--color-priority-medium);
 }
 
 .priority-low {
-  background: green;
+  background: var(--color-priority-low);
+}
+
+.role-pill {
+  margin-left: 0.5em;
+  background: var(--color-you);
+}
+
+.ticket-list {
+  list-style: none;
+  padding: 0;
+}
+
+.ticket-list li + li {
+  margin-top: 0.5rem;
 }
 
 .ticket-list button {
+  width: 100%;
+  text-align: left;
   border: none;
   border-radius: 6px;
+  padding: 0.6rem 0.8rem;
+  background: var(--color-bg);
+  color: var(--color-text);
+  cursor: pointer;
 }

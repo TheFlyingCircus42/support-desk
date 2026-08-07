@@ -4,7 +4,7 @@ import { useAuth } from './auth/authContext.js'
 import './TicketList.css'
 
 function TicketList({ onSelect }) {
-  const { token } = useAuth()
+  const { token, user } = useAuth()
   const [tickets, setTickets] = useState([])
   const [count, setCount] = useState(null)
   const [error, setError] = useState(null)
@@ -20,28 +20,34 @@ function TicketList({ onSelect }) {
   }, [token])
 
   return (
-    <div>
+    <div className="ticket-panel">
       <h1>Support Desk</h1>
       <h2>My tickets</h2>
       {count !== null && (
-        <p>
+        <p className="muted-text">
           {count} {count === 1 ? 'ticket' : 'tickets'} open
         </p>
       )}
-      {error && <p>{error}</p>}
+      {error && <p className="error-text">{error}</p>}
       {tickets.length === 0 && !error ? (
-        <p>No tickets involve you yet.</p>
+        <p className="muted-text">No tickets involve you yet.</p>
       ) : (
         <ul className="ticket-list">
-          {tickets.map((ticket) => (
-            <li key={ticket.id}>
-              <button type="button" onClick={() => onSelect(ticket.id)}>
-                {ticket.subject} —{' '}
-                <span className={`status-${ticket.status}`}>{ticket.status}</span> —{' '}
-                <span className={`priority-${ticket.priority}`}>{ticket.priority}</span>
-              </button>
-            </li>
-          ))}
+          {tickets.map((ticket) => {
+            const isRequester = user && ticket.requester === user.email
+            const isAssignee = user && ticket.assignee === user.email
+            return (
+              <li key={ticket.id}>
+                <button type="button" onClick={() => onSelect(ticket.id)}>
+                  {ticket.subject} —{' '}
+                  <span className={`status-${ticket.status}`}>{ticket.status}</span> —{' '}
+                  <span className={`priority-${ticket.priority}`}>{ticket.priority}</span>
+                  {isRequester && <span className="role-pill">Requester</span>}
+                  {isAssignee && <span className="role-pill">Assignee</span>}
+                </button>
+              </li>
+            )
+          })}
         </ul>
       )}
     </div>

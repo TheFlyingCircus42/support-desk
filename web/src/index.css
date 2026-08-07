@@ -2,9 +2,49 @@
   font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.5;
   color-scheme: light dark;
+
+  --color-bg: #ffffff;
+  --color-bg-subtle: #f8fafc;
+  --color-text: #111827;
+  --color-text-muted: #6b7280;
+  --color-border: #d1d5db;
+
+  --color-brand: #1d4ed8;
+  --color-you: #1d4ed8;
+  --color-danger: #dc2626;
+
+  --color-status-open: #dc2626;
+  --color-status-pending: #d97706;
+  --color-status-closed: #16a34a;
+  --color-priority-high: #dc2626;
+  --color-priority-medium: #d97706;
+  --color-priority-low: #16a34a;
+  --color-pill-text: #ffffff;
+}
+
+:root[data-theme='dark'] {
+  --color-bg: #0f172a;
+  --color-bg-subtle: #1e293b;
+  --color-text: #f1f5f9;
+  --color-text-muted: #94a3b8;
+  --color-border: #334155;
+
+  --color-brand: #3b82f6;
+  --color-you: #60a5fa;
+  --color-danger: #f87171;
+
+  --color-status-open: #f87171;
+  --color-status-pending: #fbbf24;
+  --color-status-closed: #4ade80;
+  --color-priority-high: #f87171;
+  --color-priority-medium: #fbbf24;
+  --color-priority-low: #4ade80;
+  --color-pill-text: #1e293b;
 }
 
 body {
   margin: 0;
   padding: 1.5rem;
+  background: var(--color-bg);
+  color: var(--color-text);
 }

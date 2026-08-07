@@ -17,11 +17,11 @@ function TicketDetail({ id, onBack }) {
   }, [id, token])
 
   return (
-    <div>
-      <button type="button" onClick={onBack}>
+    <div className="ticket-panel">
+      <button className="back-button" type="button" onClick={onBack}>
         Back
       </button>
-      {error && <p>{error}</p>}
+      {error && <p className="error-text">{error}</p>}
       {ticket && (
         <div>
           <h1>{ticket.subject}</h1>
